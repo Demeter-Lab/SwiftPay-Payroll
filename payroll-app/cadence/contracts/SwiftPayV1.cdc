@@ -16,15 +16,40 @@ pub contract SwiftPay {
     pub var workers: {String: Worker}
     // storage dictionary for payment history
     pub var payments: {String: [Payment]}
+    // create a private variable to hold the fungible token resource
+    priv var contractVault: @FungibleToken.Vault 
+    pub var testAmount: UFix64
 
-    init(){
+    init(amount: UFix64, vault: @FungibleToken.Vault){
         self.workers = {}
         self.payments = {}
+        self.testAmount = amount
+        self.contractVault <- vault
     }
 
     // ======================================= EVENTS ======================================= //
     pub event WorkerAdded(name: String, amount: UFix64)
     pub event WorkerRemoved()
+
+    //check contract's token balance
+    access(account) fun checkBalance(): UFix64{
+        log(self.contractVault.balance)
+        return self.contractVault.balance
+    }
+
+    // add deposit function
+    access(account) fun depositTokens(amount: UFix64, fundingToken: @FungibleToken.Vault){
+        let payersBalance = fundingToken.balance
+        self.contractVault.deposit(from: <- fundingToken)
+        log("Deposit Successful")
+        log("New Balance: ")
+        self.checkBalance()
+
+        // destroy the vault ??
+    }
+
+    // payment test
+    pub fun payWorker(amount: UFix64){}
     
 
     // Worker data structure
