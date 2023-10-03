@@ -11,7 +11,7 @@ config({
   // FCL automatically adds support for all wallets which support Testnet
   "discovery.wallet": "https://fcl-discovery.onflow.org/testnet/authn",
   // Alias for our Contract on testnet
-  "0xDomains": "0x...",
+  "0xSwiftPayV1": "0x0ebf272d557470e1",
   // Testnet aliases for FungibleToken contracts
   "0xFungibleToken": "0x9a0766d93b6608b7",
 });
