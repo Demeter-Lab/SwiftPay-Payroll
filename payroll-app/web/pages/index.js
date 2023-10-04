@@ -2,6 +2,7 @@ import Head from "next/head";
 // import { Freelancer } from "@/components/Freelancer";
 import { Inter } from "next/font/google";
 import { useState } from "react";
+import Login from "@/components/Login";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -68,6 +69,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <h1> Payroll Dashboard</h1>
+      <Login />
       <main className="main">
         <div>
           <SelectWhoToPay />
