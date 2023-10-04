@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { addWorker } from "@/flow-interactions/transactions";
+import { useDropzone } from "react-dropzone";
 
 export function SelectWhoToPay() {
   const [isFreelancer, setIsFreelancer] = useState(false);
@@ -18,19 +19,30 @@ export function SelectWhoToPay() {
   function Freelancer() {
     console.log("Hello From Freelancer");
     const [isSingleFreelancer, setIsSingleFreelancer] = useState(false);
+    const [isBatchFreelancer, setIsBatchFreelancer] = useState(false);
 
     function handleSingleFreelancer() {
       setIsSingleFreelancer(() => !isSingleFreelancer);
+      setIsBatchFreelancer(false);
     }
+
+    function handleBatchFreelancer() {
+      setIsBatchFreelancer(() => !isBatchFreelancer);
+      setIsSingleFreelancer(false);
+    }
+
     return (
       <>
         <div className="cards">
           <div onClick={handleSingleFreelancer}>
             {"Single Freelancer Payment "}
           </div>
-          <div>{"Batch Freelancer Payment"}</div>
+          <div onClick={handleBatchFreelancer}>
+            {"Batch Freelancer Payment"}
+          </div>
         </div>
         {isSingleFreelancer ? <SingleFreelancer /> : ""}
+        {isBatchFreelancer ? <BatchFreelancer /> : ""}
       </>
     );
   }
@@ -107,6 +119,40 @@ export function SelectWhoToPay() {
       </>
     );
   }
+
+  function BatchFreelancer() {
+    // function that is called when a file is added to the dropzone
+    const onDrop = useCallback(async (acceptedFiles) => {
+      console.log(acceptedFiles);
+    }, []);
+
+    // react-dropzone configuration
+    const {
+      getRootProps,
+      getInputProps,
+      isDragActive,
+      isDragAccept,
+      isDragReject,
+    } = useDropzone({ onDrop, accept: "text/csv" });
+
+    return (
+      <>
+        <h1>Batch Upload with CSV</h1>
+        {/* File Drop happens here */}
+        <div {...getRootProps()}>
+          <input {...getInputProps()} />
+          <p>
+            Drag and Drop a CSV file here or click to upload workers in batch
+          </p>
+        </div>
+
+        <br />
+        <button>Add Workers in Batch</button>
+      </>
+    );
+  }
+
+  function handleCSVUpload() {}
 
   return (
     <>
