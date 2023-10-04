@@ -3,6 +3,7 @@ import Head from "next/head";
 import { Inter } from "next/font/google";
 import { useState } from "react";
 import Login from "@/components/Login";
+import { addWorker } from "@/flow-interactions/transactions";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -68,34 +69,31 @@ export default function Home() {
       </>
     );
   }
-  /**
-   * <form className="form-add-friend" onSubmit={handleSubmit}>
-      <label>👭 Friend name</label>
-      <input
-        type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
 
-      <label>🌄 Image URL</label>
-      <input
-        type="text"
-        value={image}
-        onChange={(e) => setImage(e.target.value)}
-      />
-
-      <Button>Add</Button>
-    </form>
-   */
   function SingleFreelancer() {
     const [name, setName] = useState("");
     const [address, setAddress] = useState("");
     const [totalPay, setTotalPay] = useState("");
 
-    function handleSubmit(e) {
-      e.preventDefault();
+    // this function calls the addWorker function on the contract
+    async function callAddWorker() {
+      if ((name && address, totalPay)) {
+        await addWorker(name, address, totalPay);
+        // if successful alert
+        alert("Add Freelancer Successful");
+      } else {
+        alert("Field cannot be empty");
+      }
+    }
 
-      console.log("Add Freelancer Successful");
+    async function handleSubmit(e) {
+      try {
+        e.preventDefault();
+        // call the add worker function on flow
+        await callAddWorker();
+      } catch (err) {
+        alert(err.message);
+      }
     }
 
     return (
