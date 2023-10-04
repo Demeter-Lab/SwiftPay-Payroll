@@ -20,6 +20,7 @@ export default function Home() {
       setIsFreelancer(false);
       setIsEmployer(() => !isEmployer);
     }
+
     return (
       <>
         <div className="cards">
@@ -38,12 +39,20 @@ export default function Home() {
 
   function Freelancer() {
     console.log("Hello From Freelancer");
+    const [isSingleFreelancer, setIsSingleFreelancer] = useState(false);
+
+    function handleSingleFreelancer() {
+      setIsSingleFreelancer(() => !isSingleFreelancer);
+    }
     return (
       <>
         <div className="cards">
-          <div>{"Single Freelancer Payment "}</div>
+          <div onClick={handleSingleFreelancer}>
+            {"Single Freelancer Payment "}
+          </div>
           <div>{"Batch Freelancer Payment"}</div>
         </div>
+        {isSingleFreelancer ? <SingleFreelancer /> : ""}
       </>
     );
   }
@@ -55,6 +64,70 @@ export default function Home() {
         <div className="cards">
           <div>{"Single Employer Payment"}</div>
           <div>{"Batch Employer Payment"}</div>
+        </div>
+      </>
+    );
+  }
+  /**
+   * <form className="form-add-friend" onSubmit={handleSubmit}>
+      <label>👭 Friend name</label>
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
+
+      <label>🌄 Image URL</label>
+      <input
+        type="text"
+        value={image}
+        onChange={(e) => setImage(e.target.value)}
+      />
+
+      <Button>Add</Button>
+    </form>
+   */
+  function SingleFreelancer() {
+    const [name, setName] = useState("");
+    const [address, setAddress] = useState("");
+    const [totalPay, setTotalPay] = useState("");
+
+    function handleSubmit(e) {
+      e.preventDefault();
+
+      console.log("Add Freelancer Successful");
+    }
+
+    return (
+      <>
+        <div>
+          <form onSubmit={handleSubmit}>
+            <h1>Add Freelancer 👷‍♂️</h1>
+            <label>EnterName: </label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <br />
+
+            <label>Address: </label>
+            <input
+              type="text"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
+            <br />
+
+            <label>Amount: </label>
+            <input
+              type="number"
+              value={totalPay}
+              onChange={(e) => setTotalPay(e.target.value)}
+            />
+
+            <button>Add</button>
+          </form>
         </div>
       </>
     );
