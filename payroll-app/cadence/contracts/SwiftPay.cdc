@@ -1,13 +1,9 @@
 // V2 is our code without that includes the feature to deposit Fungible tokens to the contract
 
 import FungibleToken from 0x9a0766d93b6608b7
+import FlowToken from 0x7e60df042a9c0868
 
-pub contract SwiftPayV2 {
-    /** TASKS TO DO
-     * Add Worker (single)
-     * Add Workers (batch)
-     * 
-    */
+pub contract SwiftPay {
 
     // ======================================= EVENTS ======================================= //
     pub event WorkerAdded(name: String, amount: UFix64)
