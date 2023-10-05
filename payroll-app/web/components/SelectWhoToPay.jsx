@@ -1,6 +1,9 @@
 import { useCallback, useState } from "react";
 import { addWorker } from "@/flow-interactions/transactions";
 import { useDropzone } from "react-dropzone";
+import Papa from "papaparse";
+
+import { viewAllWorkers } from "@/flow-interactions/scripts";
 
 export function SelectWhoToPay() {
   const [isFreelancer, setIsFreelancer] = useState(false);
@@ -121,9 +124,24 @@ export function SelectWhoToPay() {
   }
 
   function BatchFreelancer() {
+    // state to keep track of the CSV data
+    const [parsedCsvData, setParsedCsvData] = useState([]);
+
+    // this function parses our file data from CSV to JSON
+    const parseFile = (file) => {
+      Papa.parse(file, {
+        header: true,
+        complete: (results) => {
+          setParsedCsvData(results.data);
+        },
+      });
+    };
+
     // function that is called when a file is added to the dropzone
     const onDrop = useCallback(async (acceptedFiles) => {
-      console.log(acceptedFiles);
+      if (acceptedFiles.length) {
+        parseFile(acceptedFiles[0]);
+      }
     }, []);
 
     // react-dropzone configuration
@@ -138,6 +156,13 @@ export function SelectWhoToPay() {
     return (
       <>
         <h1>Batch Upload with CSV</h1>
+        <button
+          onClick={async () => {
+            console.log(await viewAllWorkers());
+          }}
+        >
+          View All Workers
+        </button>
         {/* File Drop happens here */}
         <div {...getRootProps()}>
           <input {...getInputProps()} />
