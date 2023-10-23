@@ -4,13 +4,6 @@ import FungibleToken from "./interfaces/FungibleToken.cdc"
 import FlowToken from "./tokens/FlowToken.cdc"
 
 pub contract SwiftPayV1 {
-    /** TASKS TO DO
-     * Deposit Tokens to Contract (May not need sef)
-     * Add Worker (single)
-     * Add Workers (batch)
-     * Pay workers in Flow OR custom token
-     * 
-    */
 
     // ============================ DICTIONARY (i.e. Mappings) ============================ //
     // dictionary for workers => Make this mapping available to only employer
@@ -87,6 +80,22 @@ pub contract SwiftPayV1 {
             self.workers[worker.name] = worker
         }
         return workerList
+    }
+
+    pub fun payInBatch (workerList: [Worker]) {
+            
+            for worker in workerList {
+                let myTokenVault = self.account.borrow<&MyFlowToken.Vault>(from: /storage/newTokenVault) ?? panic("Could not Borrow Vault")
+
+                let newVault <- myTokenVault.withdraw(amount: worker.totalPay)
+
+                let recieverAccount = getAccount(worker.walletAddress)
+                    let recieverVault = recieverAccount.getCapability<&{FungibleToken.Receiver}>(/public/newTokenVault) 
+
+                let borrowedReciverVault = recieverVault.borrow() ?? panic("Could Not borrow reciver vault")
+
+                borrowedReciverVault.deposit(from: <- newVault)
+            }
     }
 
 }
