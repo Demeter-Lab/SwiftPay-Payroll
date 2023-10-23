@@ -131,7 +131,6 @@ import FungibleToken from 0x9a0766d93b6608b7
 import FlowToken from 0x7e60df042a9c0868
 
 transaction() {
-
   let workerList: [SwiftPayV3.Worker]
 
   prepare(signer: AuthAccount) {
@@ -149,23 +148,23 @@ transaction() {
       ]
 
       for worker in self.workerList {
-              let myTokenVault = signer.borrow<&FlowToken.Vault>(from: /storage/flowTokenVault) 
+
+              let vaultRef = signer.borrow<&FungibleToken.Vault>(from: /storage/flowTokenVault) 
                   ?? panic("Could not Borrow reference to the owner's Vault!")
 
-              let newVault <- myTokenVault.withdraw(amount: worker.totalPay)
+              let sentVault <- vaultRef.withdraw(amount: worker.totalPay)
 
               let receiverRef = getAccount(worker.walletAddress)
                   .getCapability(/public/flowTokenReceiver)
-                  .borrow<&{FlowToken.Receiver}>()
+                  .borrow<&{FungibleToken.Receiver}>()
                   ?? panic("Could not borrow receiver reference to the recipient's Vault")
 
 
-              receiverRef.deposit(from: <- newVault)
+              receiverRef.deposit(from: <- sentVault)
       }
   }
 
   execute {}
 }
-
 
 `;
