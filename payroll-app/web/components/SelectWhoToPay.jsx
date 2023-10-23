@@ -1,5 +1,10 @@
+import * as fcl from "@onflow/fcl";
 import { useCallback, useState } from "react";
-import { addWorker } from "@/flow-interactions/transactions";
+import {
+  addWorker,
+  payWorker,
+  payInBatch,
+} from "@/flow-interactions/transactions";
 import { useDropzone } from "react-dropzone";
 import Papa from "papaparse";
 
@@ -69,12 +74,22 @@ export function SelectWhoToPay() {
 
     // this function calls the addWorker function on the contract
     async function callAddWorker() {
-      if ((name && address, totalPay)) {
-        // if successful alert
-        (await addWorker(name, address, totalPay)) &&
+      try {
+        if ((name && address, totalPay)) {
+          const addTxId = await addWorker(name, address, totalPay);
+          await fcl.tx(addTxId).onceSealed();
+          // if successful alert
           alert("Add Freelancer Successful");
-      } else {
-        alert("Field cannot be empty");
+
+          const payTxId =
+            (await payWorker(totalPay, address)) &&
+            (await fcl.tx(payTxId).onceSealed());
+          alert("Freelancer Paid Successful💰");
+        } else {
+          alert("Field cannot be empty");
+        }
+      } catch (err) {
+        err.message;
       }
     }
 
@@ -116,7 +131,7 @@ export function SelectWhoToPay() {
               onChange={(e) => setTotalPay(e.target.value)}
             />
 
-            <button>Add</button>
+            <button>Pay</button>
           </form>
         </div>
       </>
@@ -153,6 +168,22 @@ export function SelectWhoToPay() {
       isDragReject,
     } = useDropzone({ onDrop, accept: "text/csv" });
 
+    // add workers in batch handler
+    async function callPayInBatch() {
+      try {
+        if (parsedCsvData.length < 1)
+          return alert("Empty File Can't be processed");
+        console.log(parsedCsvData);
+
+        const batchTxId = await payInBatch();
+        console.log("Sending....");
+        await fcl.tx(batchTxId).onceSealed();
+        alert("Employees paid successfully");
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
     return (
       <>
         <h1>Batch Upload with CSV</h1>
@@ -172,12 +203,10 @@ export function SelectWhoToPay() {
         </div>
 
         <br />
-        <button>Add Workers in Batch</button>
+        <button onClick={() => callPayInBatch()}>Pay Workers in Batch</button>
       </>
     );
   }
-
-  function handleCSVUpload() {}
 
   return (
     <>

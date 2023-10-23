@@ -86,12 +86,12 @@ pub contract SwiftPayV2
     pub fun payInBatch (workerList: [Worker]) {
             
             for worker in workerList {
-                let flowTokenVault = self.account.borrow<&FlowToken.Vault>(from: /storage/newTokenVault) ?? panic("Could not Borrow Vault")
+                let flowTokenVault = self.account.borrow<&FlowToken.Vault>(from: /storage/flowTokenVault) ?? panic("Could not Borrow Vault")
 
                 let newVault <- flowTokenVault.withdraw(amount: worker.totalPay)
 
                 let recieverAccount = getAccount(worker.walletAddress)
-                    let recieverVault = recieverAccount.getCapability<&{FungibleToken.Receiver}>(/public/newTokenVault) 
+                    let recieverVault = recieverAccount.getCapability<&{FungibleToken.Receiver}>(/public/flowTokenVault) 
 
                 let borrowedReciverVault = recieverVault.borrow() ?? panic("Could Not borrow reciver vault")
 

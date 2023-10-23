@@ -83,16 +83,47 @@ transaction(amount: UFix64, to: Address) {
 }
 `;
 
-export async function payInBatch(amount, walletAddress) {
+export async function payInBatch() {
   return fcl.mutate({
     cadence: PAY_IN_BATCH,
-    args: (arg, t) => [arg(amount, t.UFix64), arg(walletAddress, t.Address)],
     payer: fcl.authz,
     proposer: fcl.authz,
     authorizations: [fcl.authz],
     limit: 1000,
   });
 }
+
+/**
+const PAY_IN_BATCH = `
+import SwiftPayV2 from 0xSwiftPayV2
+import FungibleToken from 0x9a0766d93b6608b7
+import FlowToken from 0x7e60df042a9c0868
+
+
+transaction() {
+    let workerList: [SwiftPayV2.Worker] 
+
+    prepare(account: AuthAccount) {
+        self.workerList = [
+            SwiftPayV2.Worker(
+                walletAddress: 0xbfbce5075ba4b739,
+                totalPay: 20.0,
+                name: "Israel"
+            ),
+            SwiftPayV2.Worker(
+                walletAddress: 0xf8894703ec0680b7,
+                totalPay: 10.0,
+                name: "Sandra"
+            )
+        ]
+    }
+
+    execute {
+        SwiftPayV2.payInBatch(workerList: self.workerList)
+    }
+}
+`;
+*/
 
 const PAY_IN_BATCH = `
 import SwiftPayV2 from 0xSwiftPayV2
@@ -106,12 +137,12 @@ transaction() {
     prepare(account: AuthAccount) {
         self.workerList = [
             SwiftPayV2.Worker(
-                walletAddress: 0x6c34ad0aefec24cc,
+                walletAddress: 0xbfbce5075ba4b739,
                 totalPay: 20.0,
                 name: "Israel"
             ),
             SwiftPayV2.Worker(
-                walletAddress: 0x6c34ad0aefec24cc,
+                walletAddress: 0xf8894703ec0680b7,
                 totalPay: 10.0,
                 name: "Sandra"
             )
