@@ -3,7 +3,7 @@
 import FungibleToken from "./interfaces/FungibleToken.cdc"
 import FlowToken from "./tokens/FlowToken.cdc"
 
-pub contract SwiftPayV2
+pub contract SwiftPayV3
  {
 
     // ============================ DICTIONARY (i.e. Mappings) ============================ //

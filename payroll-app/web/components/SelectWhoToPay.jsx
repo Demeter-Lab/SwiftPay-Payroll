@@ -81,9 +81,9 @@ export function SelectWhoToPay() {
           // if successful alert
           alert("Add Freelancer Successful");
 
-          const payTxId =
-            (await payWorker(totalPay, address)) &&
-            (await fcl.tx(payTxId).onceSealed());
+          const payTxId = await payWorker(totalPay, address);
+          console.log("Sending....");
+          await fcl.tx(payTxId).onceSealed();
           alert("Freelancer Paid Successful💰");
         } else {
           alert("Field cannot be empty");

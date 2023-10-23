@@ -13,6 +13,7 @@ config({
   // Alias for our Contract on testnet
   "0xSwiftPayV1": "0x0ebf272d557470e1",
   "0xSwiftPayV2": "0x0ebf272d557470e1",
+  "0xSwiftPayV3": "0x0ebf272d557470e1",
   // Testnet aliases for FungibleToken contracts
   "0xFungibleToken": "0x9a0766d93b6608b7",
 });

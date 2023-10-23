@@ -95,22 +95,22 @@ export async function payInBatch() {
 
 /**
 const PAY_IN_BATCH = `
-import SwiftPayV2 from 0xSwiftPayV2
+import SwiftPayV3 from 0xSwiftPayV3
 import FungibleToken from 0x9a0766d93b6608b7
 import FlowToken from 0x7e60df042a9c0868
 
 
 transaction() {
-    let workerList: [SwiftPayV2.Worker] 
+    let workerList: [SwiftPayV3.Worker] 
 
     prepare(account: AuthAccount) {
         self.workerList = [
-            SwiftPayV2.Worker(
+            SwiftPayV3.Worker(
                 walletAddress: 0xbfbce5075ba4b739,
                 totalPay: 20.0,
                 name: "Israel"
             ),
-            SwiftPayV2.Worker(
+            SwiftPayV3.Worker(
                 walletAddress: 0xf8894703ec0680b7,
                 totalPay: 10.0,
                 name: "Sandra"
@@ -119,39 +119,53 @@ transaction() {
     }
 
     execute {
-        SwiftPayV2.payInBatch(workerList: self.workerList)
+        SwiftPayV3.payInBatch(workerList: self.workerList)
     }
 }
 `;
 */
 
 const PAY_IN_BATCH = `
-import SwiftPayV2 from 0xSwiftPayV2
+import SwiftPayV3 from 0xSwiftPayV3
 import FungibleToken from 0x9a0766d93b6608b7
 import FlowToken from 0x7e60df042a9c0868
 
-
 transaction() {
-    let workerList: [SwiftPayV2.Worker] 
 
-    prepare(account: AuthAccount) {
-        self.workerList = [
-            SwiftPayV2.Worker(
-                walletAddress: 0xbfbce5075ba4b739,
-                totalPay: 20.0,
-                name: "Israel"
-            ),
-            SwiftPayV2.Worker(
-                walletAddress: 0xf8894703ec0680b7,
-                totalPay: 10.0,
-                name: "Sandra"
-            )
-        ]
-    }
+  let workerList: [SwiftPayV3.Worker]
 
-    execute {
-        SwiftPayV2.payInBatch(workerList: self.workerList)
-    }
+  prepare(signer: AuthAccount) {
+      self.workerList = [
+          SwiftPayV3.Worker(
+              walletAddress: 0xbfbce5075ba4b739,
+              totalPay: 20.0,
+              name: "Israel"
+          ),
+          SwiftPayV3.Worker(
+              walletAddress: 0xf8894703ec0680b7,
+              totalPay: 10.0,
+              name: "Sandra"
+          )
+      ]
+
+      for worker in self.workerList {
+              let myTokenVault = signer.borrow<&FlowToken.Vault>(from: /storage/flowTokenVault) 
+                  ?? panic("Could not Borrow reference to the owner's Vault!")
+
+              let newVault <- myTokenVault.withdraw(amount: worker.totalPay)
+
+              let receiverRef = getAccount(worker.walletAddress)
+                  .getCapability(/public/flowTokenReceiver)
+                  .borrow<&{FlowToken.Receiver}>()
+                  ?? panic("Could not borrow receiver reference to the recipient's Vault")
+
+
+              receiverRef.deposit(from: <- newVault)
+      }
+  }
+
+  execute {}
 }
+
 
 `;

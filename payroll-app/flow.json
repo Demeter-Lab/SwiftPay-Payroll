@@ -50,7 +50,8 @@
       }
     },
     "SwiftPayV1": "./cadence/contracts/SwiftPayV1.cdc",
-    "SwiftPayV2": "./cadence/contracts/SwiftPayV2.cdc"
+    "SwiftPayV2": "./cadence/contracts/SwiftPayV2.cdc",
+    "SwiftPayV3": "./cadence/contracts/SwiftPayV3.cdc"
   },
   "networks": {
     "emulator": "127.0.0.1:3569",
@@ -69,7 +70,7 @@
   },
   "deployments": {
     "testnet": {
-      "testnet": ["SwiftPayV2"]
+      "testnet": ["SwiftPayV3"]
     }
   }
 }
