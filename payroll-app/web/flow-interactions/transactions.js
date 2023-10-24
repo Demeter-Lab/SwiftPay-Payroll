@@ -89,16 +89,6 @@ transaction(amount: UFix64, to: Address) {
 }
 `;
 
-// export async function payInBatch() {
-//   return fcl.mutate({
-//     cadence: PAY_IN_BATCH,
-//     payer: fcl.authz,
-//     proposer: fcl.authz,
-//     authorizations: [fcl.authz],
-//     limit: 1000,
-//   });
-// }
-
 /**
  * @author SwiftPay Finance
  * @param {Array} workerList - an array of Worker structs represented in JS string format
@@ -142,40 +132,5 @@ export async function payInBatch(workerList) {
     proposer: fcl.authz,
     authorizations: [fcl.authz],
     limit: 1000,
-    // args: (arg, t) => {
-    //   arg(workerList, t.Array(t.Struct(["walletAddress", "totalPay", "name"])));
-    // },
   });
 }
-
-/**
-const PAY_IN_BATCH = `
-import SwiftPayV3 from 0xSwiftPayV3
-import FungibleToken from 0x9a0766d93b6608b7
-import FlowToken from 0x7e60df042a9c0868
-
-
-transaction() {
-    let workerList: [SwiftPayV3.Worker] 
-
-    prepare(account: AuthAccount) {
-        self.workerList = [
-            SwiftPayV3.Worker(
-                walletAddress: 0xbfbce5075ba4b739,
-                totalPay: 20.0,
-                name: "Israel"
-            ),
-            SwiftPayV3.Worker(
-                walletAddress: 0xf8894703ec0680b7,
-                totalPay: 10.0,
-                name: "Sandra"
-            )
-        ]
-    }
-
-    execute {
-        SwiftPayV3.payInBatch(workerList: self.workerList)
-    }
-}
-`;
-*/

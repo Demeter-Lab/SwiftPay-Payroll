@@ -185,10 +185,10 @@ export function SelectWhoToPay() {
         });
         console.log(workerList);
 
-        // const batchTxId = await payInBatch(workerList);
-        // console.log("Sending....");
-        // await fcl.tx(batchTxId).onceSealed();
-        // alert("Employees paid successfully");
+        const batchTxId = await payInBatch(workerList);
+        console.log("Sending....");
+        await fcl.tx(batchTxId).onceSealed();
+        alert("Employees paid successfully");
       } catch (err) {
         console.error(err);
       }
