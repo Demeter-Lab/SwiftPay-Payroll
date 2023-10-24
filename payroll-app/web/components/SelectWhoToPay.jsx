@@ -174,11 +174,21 @@ export function SelectWhoToPay() {
         if (parsedCsvData.length < 1)
           return alert("Empty File Can't be processed");
         console.log(parsedCsvData);
+        console.log(parsedCsvData[0]);
 
-        const batchTxId = await payInBatch();
-        console.log("Sending....");
-        await fcl.tx(batchTxId).onceSealed();
-        alert("Employees paid successfully");
+        const workerList = parsedCsvData.map((worker) => {
+          const workerAddress = worker.walletAddress;
+          const workerPay = worker.totalPay;
+          const workerName = `"${worker.name}"`;
+
+          return `SwiftPayV3.Worker(walletAddress: ${workerAddress}, totalPay: ${workerPay}, name: ${workerName})`;
+        });
+        console.log(workerList);
+
+        // const batchTxId = await payInBatch(workerList);
+        // console.log("Sending....");
+        // await fcl.tx(batchTxId).onceSealed();
+        // alert("Employees paid successfully");
       } catch (err) {
         console.error(err);
       }

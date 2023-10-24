@@ -39,6 +39,12 @@ const ADD_WORKER = `
     }
 `;
 
+/**
+ * @author SwiftPay Finance
+ * @param {Number} amount - amount to pay worker. Expected to be in decimal form (e.g. -> 25.50)
+ * @param {Hex} walletAddress - worker's 0x wallet address on flow blockhain
+ * @returns flow transaction ID
+ */
 export async function payWorker(amount, walletAddress) {
   return fcl.mutate({
     cadence: PAY_WORKER,
@@ -83,13 +89,62 @@ transaction(amount: UFix64, to: Address) {
 }
 `;
 
-export async function payInBatch() {
+// export async function payInBatch() {
+//   return fcl.mutate({
+//     cadence: PAY_IN_BATCH,
+//     payer: fcl.authz,
+//     proposer: fcl.authz,
+//     authorizations: [fcl.authz],
+//     limit: 1000,
+//   });
+// }
+
+/**
+ * @author SwiftPay Finance
+ * @param {Array} workerList - an array of Worker structs represented in JS string format
+ * @example ['SwiftPayV3.Worker(walletAddress: 0x6c34ad0aefec24cc, totalPay: 24.00, name: "Andrea")', 'SwiftPayV3.Worker(walletAddress: 0xeaa2bb0ceeff4067, totalPay: 25.00, name: "Dexter")']
+ * @returns flow transaction ID
+ */
+export async function payInBatch(workerList) {
+  const PAY_IN_BATCH = `
+  import SwiftPayV3 from 0xSwiftPayV3
+  import FungibleToken from 0x9a0766d93b6608b7
+  import FlowToken from 0x7e60df042a9c0868
+  
+  transaction() {
+    let workerList: [SwiftPayV3.Worker]
+
+    prepare(signer: AuthAccount) {
+      self.workerList = [${workerList}]
+
+      for worker in self.workerList {
+        let vaultRef = signer.borrow<&FungibleToken.Vault>(from: /storage/flowTokenVault) 
+            ?? panic("Could not Borrow reference to the owner's Vault!")
+  
+        let sentVault <- vaultRef.withdraw(amount: worker.totalPay)
+  
+        let receiverRef = getAccount(worker.walletAddress)
+            .getCapability(/public/flowTokenReceiver)
+            .borrow<&{FungibleToken.Receiver}>()
+            ?? panic("Could not borrow receiver reference to the recipient's Vault")
+  
+        receiverRef.deposit(from: <- sentVault)
+      }
+    }
+  
+    execute {}
+  }
+  `;
+
   return fcl.mutate({
     cadence: PAY_IN_BATCH,
     payer: fcl.authz,
     proposer: fcl.authz,
     authorizations: [fcl.authz],
     limit: 1000,
+    // args: (arg, t) => {
+    //   arg(workerList, t.Array(t.Struct(["walletAddress", "totalPay", "name"])));
+    // },
   });
 }
 
@@ -124,47 +179,3 @@ transaction() {
 }
 `;
 */
-
-const PAY_IN_BATCH = `
-import SwiftPayV3 from 0xSwiftPayV3
-import FungibleToken from 0x9a0766d93b6608b7
-import FlowToken from 0x7e60df042a9c0868
-
-transaction() {
-  let workerList: [SwiftPayV3.Worker]
-
-  prepare(signer: AuthAccount) {
-      self.workerList = [
-          SwiftPayV3.Worker(
-              walletAddress: 0xbfbce5075ba4b739,
-              totalPay: 20.0,
-              name: "Israel"
-          ),
-          SwiftPayV3.Worker(
-              walletAddress: 0xf8894703ec0680b7,
-              totalPay: 10.0,
-              name: "Sandra"
-          )
-      ]
-
-      for worker in self.workerList {
-
-              let vaultRef = signer.borrow<&FungibleToken.Vault>(from: /storage/flowTokenVault) 
-                  ?? panic("Could not Borrow reference to the owner's Vault!")
-
-              let sentVault <- vaultRef.withdraw(amount: worker.totalPay)
-
-              let receiverRef = getAccount(worker.walletAddress)
-                  .getCapability(/public/flowTokenReceiver)
-                  .borrow<&{FungibleToken.Receiver}>()
-                  ?? panic("Could not borrow receiver reference to the recipient's Vault")
-
-
-              receiverRef.deposit(from: <- sentVault)
-      }
-  }
-
-  execute {}
-}
-
-`;
